@@ -32,6 +32,7 @@ class HabitListAdapter : RecyclerView.Adapter<HabitListAdapter.HabitViewHolder>(
 
         fun bind(habit: HabitItem) {
             binding.titleTextView.text = habit.title
+            binding.descriptionTextView.text = habit.description
             binding.completeCheckBox.isChecked = habit.isCompleted
         }
     }
