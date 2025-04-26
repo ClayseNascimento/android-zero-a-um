@@ -1,20 +1,24 @@
 package br.com.coupledev.listadehabitos.collections
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.AsyncListDiffer
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import br.com.coupledev.listadehabitos.R
 import br.com.coupledev.listadehabitos.databinding.HabitItemBinding
 
-class HabitListAdapter : RecyclerView.Adapter<HabitListAdapter.HabitViewHolder>() {
+class HabitListAdapter(private val viewModel: HabitListViewModel) :
+    RecyclerView.Adapter<HabitListAdapter.HabitViewHolder>() {
 
     private val asyncListDiffer: AsyncListDiffer<HabitItem> = AsyncListDiffer(this, DiffCallback)
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HabitViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
         val binding = HabitItemBinding.inflate(layoutInflater, parent, false)
-        return HabitViewHolder(binding)
+        return HabitViewHolder(binding, viewModel)
     }
 
     override fun getItemCount(): Int = asyncListDiffer.currentList.size
@@ -27,13 +31,26 @@ class HabitListAdapter : RecyclerView.Adapter<HabitListAdapter.HabitViewHolder>(
         asyncListDiffer.submitList(habits)
     }
 
-    class HabitViewHolder(private val binding: HabitItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+    class HabitViewHolder(
+        private val binding: HabitItemBinding, private val viewModel: HabitListViewModel
+    ) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(habit: HabitItem) {
+            when (habit.isCompleted) {
+                true -> ContextCompat.getColor(
+                    binding.root
+                        .context, R.color.completed_item_background
+                )
+                false -> Color.TRANSPARENT
+            }
+
             binding.titleTextView.text = habit.title
             binding.descriptionTextView.text = habit.description
             binding.completeCheckBox.isChecked = habit.isCompleted
+            binding.completeCheckBox.setOnClickListener {
+                viewModel.toggleHabitCompletion(habit.id)
+
+            }
         }
     }
 

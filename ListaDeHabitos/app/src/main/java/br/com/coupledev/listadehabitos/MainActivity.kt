@@ -2,6 +2,7 @@ package br.com.coupledev.listadehabitos
 
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -11,14 +12,18 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
+import br.com.coupledev.listadehabitos.collections.HabitListViewModel
 import br.com.coupledev.listadehabitos.databinding.ActivityMainBinding
-import com.google.android.material.snackbar.Snackbar
+import br.com.coupledev.listadehabitos.dummy.MockHabits
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
+    private val viewModel: HabitListViewModel by viewModels{
+        HabitListViewModel.Factory(MockHabits)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,11 +36,8 @@ class MainActivity : AppCompatActivity() {
 
         supportActionBar?.title = getString(R.string.title_habit_list)
 
-        binding.fab.setOnClickListener{ view ->
-            Snackbar
-                .make(view, "Add new Habit", Snackbar.LENGTH_LONG)
-                .setAction("Add", null)
-                .show()
+        binding.fab.setOnClickListener{ _ ->
+            viewModel.addRandomHabit()
         }
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
